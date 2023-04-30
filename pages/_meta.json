@@ -1,9 +1,10 @@
 {
   "index": {
-    "title": "CodeBits",
+    "title": "Code Shelf",
     "display": "hidden",
     "theme": {
-      "layout": "full"
+      "layout": "full",
+      "timestamp": false
     }
   }
 }
