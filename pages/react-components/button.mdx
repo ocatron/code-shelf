@@ -1,0 +1,242 @@
+# Button
+
+import { Tab, Tabs } from 'nextra-theme-docs'
+import Button from '@/demos/components/Button'
+
+## Dependencies
+
+To style this component, we'll be using Tailwind CSS with nesting enabled. Be sure to follow the Tailwind installation guide available [here](https://tailwindcss.com/docs/installation).
+
+Once you have Tailwind installed and set up, you'll need to configure the `postcss.config.js` file to enable nesting. Here's an example of what your configuration file should look like:
+
+```js filename="postcss.config.js" {4}
+module.exports = {
+  plugins: {
+    'tailwindcss/nesting': {},
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+```
+
+Additionally, we use the [classnames](https://www.npmjs.com/package/classnames) library to conditionally join class names. Simply add it to your dependencies and you're good to go.
+
+## The Component
+
+<Tabs items={["Typescript","Style"]}>
+  <Tab>
+  ```tsx filename="Button.tsx"
+  // Import dependencies
+  import classNames from 'classnames';
+  import {
+    ComponentPropsWithRef,
+    ForwardedRef,
+    ReactElement,
+    ReactNode,
+    createElement,
+    forwardRef,
+  } from 'react';
+
+  // Button styles 
+  import styles from './style.module.css';
+
+  // The element type that the Button component will be rendered as
+  type AsType = 'a' | 'button';
+
+  // Button props
+  type Props<E extends AsType> = {
+    as?: E;
+    variant?: 'filled' | 'outlined' | 'text';
+    size?: 'sm' | 'md' | 'lg';
+    square?: boolean;
+    circle?: boolean;
+    fullWidth?: boolean;
+    color?: string;
+    leftIcon?: ReactElement;
+    rightIcon?: ReactElement;
+    children?: ReactNode;
+  } & ComponentPropsWithRef<E>;
+
+  // This type would be used to do a type assertion when exporting the component 
+  type ButtonComponentType = <E extends AsType = 'button'>(
+    props: Props<E>
+  ) => ReactElement | null;
+
+  // The actual component
+  const Button = forwardRef(
+    <E extends AsType>(
+      {
+        as,
+        variant = 'filled',
+        size = 'md',
+        square = false,
+        circle = false,
+        fullWidth = false,
+        color = 'blue',
+        leftIcon,
+        rightIcon,
+        children,
+        className,
+        ...rest
+      }: Props<E>,
+      ref?: ForwardedRef<E>
+    ) => {
+      // Set the element type to "button" if not provided 
+      const element = as || 'button';
+
+      // Compose class names using props and imported styles.module.css
+      className = classNames(
+        styles.btn,
+        styles[size],
+        square && styles.square,
+        circle && styles.circle,
+        fullWidth && styles.fullWidth,
+        styles[variant],
+        styles[color],
+        className
+      );
+
+      // Compose button children
+      children = (
+        <span className="flex min-h-[1.5rem] min-w-[1.5rem] items-center justify-center gap-2">
+          {leftIcon && (
+            <span className={classNames(!square && !circle && '-ml-1')}>
+              {leftIcon}
+            </span>
+          )}
+          {children}
+          {rightIcon && (
+            <span className={classNames(!square && !circle && '-mr-1')}>
+              {rightIcon}
+            </span>
+          )}
+        </span>
+      );
+
+      // Create an element passing in the composed className, children, ref and the rest of the props
+      return createElement(element, { ...rest, className, ref }, children);
+    }
+  );
+
+  // Set display name
+  Button.displayName = 'Button';
+
+  export default Button as ButtonComponentType;
+  ```
+  </Tab>
+  <Tab>
+    ```postcss filename="style.module.css"
+    .btn {
+      @apply select-none overflow-hidden rounded-2xl border-2 border-transparent bg-origin-border text-base font-medium transition-all;
+      @apply outline-none ring-offset-1 focus-visible:ring-2;
+      @apply disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none;
+
+      &.sm {
+        @apply rounded-xl px-3 py-0.5;
+
+        &.square,
+        &.circle {
+          @apply h-8 w-8 px-0.5 py-0.5;
+        }
+      }
+
+      &.md {
+        @apply px-4 py-1.5;
+
+        &.square,
+        &.circle {
+          @apply h-10 w-10 px-1.5 py-1.5;
+        }
+      }
+
+      &.lg {
+        @apply px-5 py-2.5;
+
+        &.square,
+        &.circle {
+          @apply h-12 w-12 px-2.5 py-2.5;
+        }
+      }
+
+      &.square,
+      &.circle {
+        @apply flex items-center justify-center;
+      }
+
+      &.circle {
+        @apply rounded-full;
+      }
+
+      &.fullWidth {
+        @apply block w-full;
+      }
+
+      &.filled {
+        &.blue {
+          @apply bg-blue-600 text-white shadow-md shadow-blue-600/25 ring-blue-400;
+          @apply hover:shadow-lg hover:shadow-blue-600/40;
+          @apply active:opacity-90 active:shadow-none;
+        }
+      }
+
+      &.outlined {
+        &.blue {
+          @apply border-blue-600 text-blue-600 ring-blue-400;
+          @apply hover:shadow-lg hover:shadow-blue-600/40;
+          @apply active:opacity-90 active:shadow-none;
+        }
+      }
+
+      &.text {
+        &.blue {
+          @apply text-blue-600 ring-blue-400;
+          @apply hover:bg-blue-600/10;
+          @apply active:opacity-50;
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Usage
+
+```tsx {7-9,12-14}
+import { Button } from './Button'
+
+export default function Component() {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-baseline flex-wrap gap-4">
+        <Button variant="filled">Button</Button>
+        <Button variant="outlined">Button</Button>
+        <Button variant="text">Button</Button>
+      </div>
+      <div className="flex items-baseline flex-wrap gap-4">
+        <Button size='sm'>Button</Button>
+        <Button size='md'>Button</Button>
+        <Button size='lg'>Button</Button>
+      </div>
+    </div>
+  )
+}
+```
+
+import DemoContainer from '@/components/DemoContainer'
+
+<DemoContainer>
+  <div className="flex flex-col gap-4">
+    <div className="flex items-baseline flex-wrap gap-4">
+      <Button variant="filled">Filled</Button>
+      <Button variant="outlined">Outlined</Button>
+      <Button variant="text">Text</Button>
+    </div>
+    <div className="flex items-baseline flex-wrap gap-4">
+      <Button size='sm'>Small</Button>
+      <Button size='md'>Medium</Button>
+      <Button size='lg'>Large</Button>
+    </div>
+  </div>
+</DemoContainer>
+
+
