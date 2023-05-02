@@ -9,7 +9,7 @@ To style this component, we'll be using Tailwind CSS with nesting enabled. Be su
 
 Once you have Tailwind installed and set up, you'll need to configure the `postcss.config.js` file to enable nesting. Here's an example of what your configuration file should look like:
 
-```js filename="postcss.config.js" {4}
+```js filename="postcss.config.js" {3}
 module.exports = {
   plugins: {
     'tailwindcss/nesting': {},
@@ -201,6 +201,8 @@ Additionally, we use the [classnames](https://www.npmjs.com/package/classnames) 
 
 ## Usage
 
+### Code
+
 ```tsx {7-9,12-14}
 import { Button } from './Button'
 
@@ -221,6 +223,7 @@ export default function Component() {
   )
 }
 ```
+### Preview
 
 import DemoContainer from '@/components/DemoContainer'
 
